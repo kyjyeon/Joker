@@ -7,16 +7,15 @@ const url = 'mongodb://localhost:27017/';
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "",
+        token : "xoxb-582582124755-587875604934-86ISu22wmEaDhGWtQmpvumbR",
         name : "Joker"
     });
     
     // Start the slackbot
     bot.on('start', () =>{
         const face = {
-            icon_emoji: ':laughing:'
+            icon_emoji: ':bowtie:'
         };
-    
         bot.postMessageToChannel('everyone', 'Have some fun with @Joker!\nFor commands write @joker help'
         , face);
     });
@@ -28,30 +27,71 @@ bot.on('message', (data) => {
     if(data.type !== 'message'){
         return;
     }
+    
     console.log(data);
-    handleMessage(data.text);
+    handleMessage(data.text, data.channel, data.user);
 });
 
 
 // Responding to Data
-function handleMessage(message){
+function handleMessage(message, channel, user){
+    console.log(message);
+    console.log(channel);
+    console.log(user);
 
-    if(message.includes(' yomama')){
-        yomamaJoke();
-    }
-    else if(message.includes(' general')){
-        generalJoke();
-    }
+    if(message === `${user} hi`)
+        bot.postMessageToChannel('everyone', "Tell you what??? :nomouth:", embarrased);
+    if(message.includes(' tell me')){
+        if(message.includes(' knock')){
+            knockknockJoke();
+        }
+        else if(message.includes(' general')){
+            generalJoke();
+        }
 
-    else if(message.includes(' random')){
-        randomJoke();
-    }
+        else if(message.includes(' random')){
+            console.log(message);
+            randomJoke();
+        }
     
-    else if(message.includes(' programming')){
-        programmingJoke();
+        else if(message.includes(' programming')){
+            programmingJoke();
+        }
+        else if(message.includes(' me  ')){
+            bot.postMessageToChannel('everyone', "Tell you what??? :nomouth:", embarrased);
+        }
+        else{
+            const embarrased = {
+                icon_emoji: ':flushed:'
+            };
+            comment = "Sorry I dont' have that kind of joke.....:droplet::droplet::droplet:\nPlease use @joker --help to know what I can do!";
+            bot.postMessageToChannel('everyone', comment, embarrased);
+
+        }
+        
     }
     else if(message.includes(' help')){
+        
     }
+    else if(message.includes(' what jokes' || ' What jokes' || ' which jokes')){
+        jokeTypes = ["general", 'programming', 'knock-knock'];
+        const face = {
+            icon_emoji: ':thumbsup:'
+        };
+        bot.postMessageToChannel("everyone", `I have ${jokeTypes[0]}, ${jokeTypes[1]}, ${jokeTypes[2]} jokes!! :thumbsup: :thumbsup:`, face);
+        return;
+    }
+    // else{
+    //     const embarrased = {
+    //         icon_emoji: ':flushed:'
+    //     };
+    //     const sweat = {
+    //         icon_emoji: ':droplet:'
+    //     };
+    //     comment = "Sorry I'm not smart enough to understand this.....\nPlease use @joker help to know what I can do!";
+    //     bot.postMessageToChannel('everyone', comment, embarrased);
+        
+    // }
 }
 randomJoke= ()=>{
     MongoClient.connect('mongodb://localhost:27017', function (err, client){
@@ -95,7 +135,7 @@ randomJoke= ()=>{
             icon_emoji: ':laughing:'
         };
         function secondFunction(channel){
-            bot.postMessageToChannel(channel, joke, face);
+           setTimeout(bot.postMessageToChannel(channel, joke, face, 7000));
             console.log( "허무개그 전송~~~~!")
         }
         secondFunction('everyone');
@@ -169,25 +209,18 @@ programmingJoke= ()=>{
                 if(total.type === "programming"){
                     question = total.setup;
                     joke = total.punchline;
+                    channel = 'everyone';
+                    const face = {
+                        icon_emoji: ':laughing:'
+                    };
+                    ques_and_joke = [question, joke, face, channel];
+                    return ques_and_joke;
                 }
                 else if(total.type != "programming"){
                     client.close();
                     programmingJoke();
                 }
             
-            const face = {
-                icon_emoji: ':laughing:'
-            };
-            function firstFunction(channel){
-                bot.postMessageToChannel(channel, joke, face);
-                console.log("프로그래밍 허무개그 전송~~~~!");
-            }
-            
-            function secondFunction(channel, callback){
-                bot.postMessageToChannel(channel, question, face);
-                console.log("프로그래밍 질문 불려짐")
-            }
-            secondFunction('everyone').then(firstFunction('everyone'));
             // bot.postMessageToChannel('everyone', question, face);
             // bot.postMessageToChannel('full-stack-web', question, joke, face);
             // bot.postMessageToChannel('bot_test', question, face);
@@ -195,9 +228,82 @@ programmingJoke= ()=>{
             // bot.postMessageToChannel('full-stack-web', joke, face);
             // bot.postMessageToChannel('bot_test', joke, face);
         })
+        .then((joke_info)=>{
+            function askQuestion(){
+                bot.postMessageToChannel(joke_info[3], joke_info[0], joke_info[2]);
+                console.log("프로그래밍 질문 불려짐");
+            }
+            askQuestion();
+            return joke_info;
+        })
+        .then((info)=>{
+            bot.postMessageToChannel(info[3], info[1], info[2]);
+            return;
+        })
+        client.close();
+        })
+    };
+
+knockknockJoke= ()=>{
+    MongoClient.connect(url, function (err, client){
+        if (err) throw err; 
+        var db = client.db('jokeapi');
+    
+        json_max = 61;
+        function getRandomInt() {
+            min = Math.ceil(1);
+            max = Math.floor(json_max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        random = getRandomInt();
+        result = db.collection('jokes').findOne({id: random});   
+        user = result;
+        user.then(function(total){
+                if(total.type === "knock-knock"){
+                    question = total.setup;
+                    joke = total.punchline;
+                    channel = 'everyone';
+                    const face = {
+                        icon_emoji: ':laughing:'
+                    };
+                    ques_and_joke = [question, joke, face, channel];
+                    return ques_and_joke;
+                }
+                else if(total.type != "knock-knock"){
+                    client.close();
+                    knockknockJoke();
+                }
+            
+            // bot.postMessageToChannel('everyone', question, face);
+            // bot.postMessageToChannel('full-stack-web', question, joke, face);
+            // bot.postMessageToChannel('bot_test', question, face);
+            // bot.postMessageToChannel('everyone', joke, face);
+            // bot.postMessageToChannel('full-stack-web', joke, face);
+            // bot.postMessageToChannel('bot_test', joke, face);
+        })
+        .then((joke_info)=>{
+            function askQuestion(){
+                bot.postMessageToChannel(joke_info[3], joke_info[0], joke_info[2]);
+                console.log("똑똑 질문 불려짐");
+            }
+            askQuestion();
+            return joke_info;
+        })
+        .then((info)=>{
+            bot.postMessageToChannel(info[3], info[1], info[2]);
+        })
         client.close();
         })
     }
+runHelp = () =>{
+    function runhelp(){
+        const face = {
+            icon_emoji: ':question:'
+        };
+        comment = "Thanks for using Joker bot!:ghost::ghost:laugh:\nBot info: type '@joker --help'\nBot functions: @joker tell me [something] "
+        bot.postMessageToChannel('everyone', "Type @joker and write a joke that you would like\n ex- @joker random",face);
+    }
+}
 }
 
 
@@ -244,4 +350,4 @@ programmingJoke= ()=>{
         
         //     bot.postMessageToChannel('everyone', "Type @joker and write a joke that you would like\n ex- @joker random",face);
         //     bot.postMessageToChannel('full-stack-web', "Type @joker and write a joke that you would like\n ex- @joker random",face);
-        // };
+        // }
