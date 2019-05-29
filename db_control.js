@@ -2,18 +2,19 @@ const MongoClient = require('mongodb').MongoClient;
 const jokedoc = require('./joke_data/jokes.json');
 const dbname =  'jokeapi';
 const collec = 'jokes';
+const mongoose = require('mongoose');
 
 var url = "mongodb://localhost:27017/jokeapi";
 
 //Create database
-MongoClient.connect(url, function(err, db) {
+mongoose.connect(url, function(err, db) {
   if (err) throw err;
   console.log("Database created!");
   db.close();
 });
 
 //Create collection
-MongoClient.connect(url, function(err, db) {
+mongoose.connect(url, function(err, db) {
     if (err) throw err;
     var dbo = db.db("jokeapi");
     dbo.createCollection("joke", function(err, res) {
@@ -25,21 +26,17 @@ MongoClient.connect(url, function(err, db) {
 
 
 //Storing data jokes.json data into mongodb
-MongoClient.connect(url).then((client) => {
-
+mongoose.connect(url).then((client) => {
+  
     console.log('Connected correctly to server');
- 
- 
     const db = client.db(dbname);
 
     dboperation.insertDocument(db, jokedoc, collec)
         .then((result) => {
             console.log("Inserted Document:\n", result.ops);
-
             return dboperation.findDocuments(db, collec);
         })
         .catch((err) => console.log(err));
-
 })
 .catch((err) => console.log(err));
 
