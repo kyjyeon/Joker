@@ -139,7 +139,7 @@ function getRandomInt(max_num) {
 //Function for giving out random joke
 randomJoke= (user_channel)=>{
     //Connect to mongodb client
-    mongoose.connect(url, function (err, client){
+    MongoClient.connect(url, function (err, client){
     if (err) throw err; 
     //go into database name jokeapi
     var db = client.db('jokeapi');
@@ -175,7 +175,7 @@ randomJoke= (user_channel)=>{
 
 //Function for giving out random joke after filtering only general type jokes
 generalJoke= (user_channel)=>{
-    mongoose.connect(url, function (err, client){
+    MongoClient.connect(url, function (err, client){
         if (err) throw err; 
         var db = client.db('jokeapi');
     
@@ -214,7 +214,7 @@ generalJoke= (user_channel)=>{
 
 //Function for giving out random joke after filtering only programming type jokes
 programmingJoke= (user_channel)=>{
-        mongoose.connect(url, function (err, client){
+        MongoClient.connect(url, function (err, client){
         if (err) throw err; 
         var db = client.db('jokeapi');
     
@@ -252,7 +252,7 @@ programmingJoke= (user_channel)=>{
 
 //Function for giving out random joke after filtering only knock-knock type jokes
 knockknockJoke= (user_channel)=>{
-    mongoose.connect(url, function (err, client){
+    MongoClient.connect(url, function (err, client){
         if (err) throw err; 
         var db = client.db('jokeapi');
         json_max = 61;
