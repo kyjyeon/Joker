@@ -7,14 +7,14 @@ const mongoose = require('mongoose');
 var url = "mongodb://localhost:27017/jokeapi";
 exports.createdb = ()=>{
 //Create database
-mongoose.connect(url, function(err, db) {
+MongoClient.connect(url, function(err, db) {
   if (err) throw err;
   console.log("Database created!");
   db.close();
 });
 
 //Create collection
-mongoose.connect(url, function(err, db) {
+MongoClient.connect(url, function(err, db) {
     if (err) throw err;
     var dbo = db.db("jokeapi");
     dbo.createCollection("joke", function(err, res) {
@@ -26,7 +26,7 @@ mongoose.connect(url, function(err, db) {
 
 
 //Storing data jokes.json data into mongodb
-mongoose.connect(url).then((client) => {
+MongoClient.connect(url).then((client) => {
 
     console.log('Connected correctly to server');
     const db = client.db(dbname);
