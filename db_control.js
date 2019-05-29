@@ -4,8 +4,7 @@ const dbname =  'jokeapi';
 const collec = 'jokes';
 const mongoose = require('mongoose');
 
-//var url = "mongodb://mongo:27017/jokeapi";
-var url = "mongodb://mongo:27017/joker";
+var url = "mongodb://localhost:27017/jokeapi";
 exports.createdb = ()=>{
 //Create database
 MongoClient.connect(url, function(err, db) {
