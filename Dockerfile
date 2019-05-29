@@ -10,4 +10,4 @@ COPY . .
 
 ENV NAME joker
 
-CMD ["node db_control","npm start"]
+CMD ["npm", "start"]
