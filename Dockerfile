@@ -10,4 +10,4 @@ COPY . .
 
 ENV NAME joker
 
-CMD ["npm", "start"]
+CMD ["npm start"]

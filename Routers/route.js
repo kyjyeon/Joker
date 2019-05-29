@@ -2,7 +2,7 @@ const MongoClient = require('mongodb').MongoClient;
 const SlackBot = require('slackbots'); //link : https://github.com/mishk0/slack-bot-api
 const dbname =  'jokeapi';
 const emoji = require('../slack_emoji');
-const url = 'mongodb://localhost:27017/';
+const url = 'mongodb://27017/';
 const mongoose = require('mongoose');
 
 exports.startbot = ()=>{
