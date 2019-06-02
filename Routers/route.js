@@ -2,14 +2,13 @@ const MongoClient = require('mongodb').MongoClient;
 const SlackBot = require('slackbots'); //link : https://github.com/mishk0/slack-bot-api
 const dbname =  'jokeapi';
 const emoji = require('../slack_emoji');
-const url = 'mongodb://mongo:27017/joker';
-const mongoose = require('mongoose');
+const url = 'mongodb://localhost:27017/';
 
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "",
-        name : "Joker"
+        token : "xoxb-651692943605-645515979745-sfNJBLVbIIb86Bz1gfFc7oT2",
+        name : "joker"
     });
     
     // Start the slackbot
@@ -81,7 +80,6 @@ bot.on('message', (data) => {
 // Responding to Data
 function handleMessage(message, current_channel){
     console.log(message);
-
 //Handles message response depending on the user message
     if(message.includes(' tell me') || message.includes(' Tell me')){
         if(message.includes(' knock')){
@@ -98,37 +96,44 @@ function handleMessage(message, current_channel){
         else if(message.includes(' programming')){
             programmingJoke(current_channel);
         }
-        else if(message.includes(' me   ')){
+        else if(message.includes(' reddit')){
+            redditJoke(current_channel);
+        }
+        else if(message.includes(' funny story')){
+            Funnystory(current_channel);
+        }
+        else if(message.includes(' me')){
+            comment = "Please use @joker --help to know what I can do!:smiliey::smiliey::smiliey:\n You can write type of joke[knock-knock, general, programming, funny story, reddit]";
             bot.postMessageToChannel(current_channel, "Tell you what??? :no_mouth:", emoji.emojis('no_mouth'));
-        }
-        else{
-            comment = "Sorry I dont' have that kind of joke.....:droplet::droplet::droplet:\nPlease use @joker --help to know what I can do!";
             bot.postMessageToChannel(current_channel, comment, emoji.emojis('flushed'));
-
-        }
-        
+        }  
     }
     else if(message.includes(' help')){
-        
+       comment = "If you want to start @joker then write [tell me] and write type of joke [knock-knock, general, programming, funny story, reddit]:smiley:!!!";
+       bot.postMessageToChannel(current_channel, comment, emoji.emojis('smiliey'));
     }
     else if(message.includes(' what jokes')){
-        jokeTypes = ["general", 'programming', 'knock-knock'];
-        bot.postMessageToChannel(current_channel, `I have ${jokeTypes[0]}, ${jokeTypes[1]}, ${jokeTypes[2]} jokes!! :thumbsup: :thumbsup:`, emoji.emojis('thumbsup'));
+        jokeTypes = ["general", 'programming', 'knock-knock','reddit','funny story'];
+        bot.postMessageToChannel(current_channel, `I have ${jokeTypes[0]}, ${jokeTypes[1]}, ${jokeTypes[2]},${jokeTypes[3]},${jokeTypes[4]} jokes!! :thumbsup: :thumbsup:`, emoji.emojis('thumbsup'));
         return;
     }
-    // else{
-    //     const embarrased = {
-    //         icon_emoji: ':flushed:'
-    //     };
-    //     const sweat = {
-    //         icon_emoji: ':droplet:'
-    //     };
-    //     comment = "Sorry I'm not smart enough to understand this.....\nPlease use @joker help to know what I can do!";
-    //     bot.postMessageToChannel('everyone', comment, embarrased);
-        
-    // }
+    //else if(message.inculdes(' write'))
+    //{
+    //    MakeJoke(message);
+    //}
+    /*else{
+         comment = "Sorry I'm not smart enough to understand this.....\nPlease use @joker help to know what I can do!";
+         bot.postMessageToChannel(current_channel, comment, emoji.emojis('flushed'));    
+    }*/
 }
-
+function MakeJoke(message){
+    fs.writeFile('../joke_data//jokes.json',message,function(err){
+        if(err) {
+            console.log('Error' + err);
+        }
+        console.log('완료');
+    })
+}
 //Gets a random integer
 function getRandomInt(max_num) {
     min = Math.ceil(1);
@@ -139,7 +144,7 @@ function getRandomInt(max_num) {
 //Function for giving out random joke
 randomJoke= (user_channel)=>{
     //Connect to mongodb client
-    MongoClient.connect(url, function (err, client){
+    MongoClient.connect('mongodb://localhost:27017', function (err, client){
     if (err) throw err; 
     //go into database name jokeapi
     var db = client.db('jokeapi');
@@ -250,6 +255,62 @@ programmingJoke= (user_channel)=>{
         })
     };
 
+
+
+//Function for giving out funny story 
+Funnystory= (user_channel)=>{
+    MongoClient.connect(url, function (err, client){
+        if (err) throw err; 
+        var db = client.db('FunnyStoryapi');
+    
+        
+        random = getRandomInt(200);
+        result = db.collection('FunnyStory').findOne({id: random});   
+        user = result;
+        //if the random picked api type is not general execute the function from the start to get another format for general type
+        user.then(function(total){
+            category = total.category
+             bot.postMessageToChannel(user_channel, category, emoji.emojis('smiliey'));
+             console.log("이야기 카테고리")
+        return total;
+        })
+        .then((all)=>{
+            story = all.body;
+             bot.postMessageToChannel(user_channel, `${story}:stuck_out_tongue_winking_eye::laughing:`, emoji.emojis('laughing'))
+            console.log("이야기 시작!");
+            
+        })
+        client.close();
+        })
+    };
+        
+
+//Function for giving out random joke after filtering only reddit jokes
+redditJoke= (user_channel)=>{
+    MongoClient.connect(url, function (err, client){
+        if (err) throw err; 
+        var db = client.db('redditjoke');
+    
+        json_max = 70;
+        random = getRandomInt(json_max);
+        result = db.collection('reddit').findOne({id: random});   
+        user = result;
+        //if the random picked api type is not general execute the function from the start to get another format for general type
+        user.then(function(total){
+             title = total.title;
+             bot.postMessageToChannel(user_channel, title, emoji.emojis('smiliey'));
+             console.log("문답형 JOKE")
+    return total;
+        })
+        .then((all)=>{
+            joke = all.body;
+     bot.postMessageToChannel(user_channel, `${joke}:stuck_out_tongue_winking_eye::laughing:`, emoji.emojis('laughing'))
+            console.log("정답은~~");
+            
+        })
+        client.close();
+        })
+    };        
 //Function for giving out random joke after filtering only knock-knock type jokes
 knockknockJoke= (user_channel)=>{
     MongoClient.connect(url, function (err, client){
