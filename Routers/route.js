@@ -108,9 +108,8 @@ function handleMessage(message, current_channel){
             bot.postMessageToChannel(current_channel, comment, emoji.emojis('flushed'));
         }  
     }
-    else if(message.includes(' help')){
-       comment = "If you want to start @joker then write [tell me] and write type of joke [knock-knock, general, programming, funny story, reddit]:smiley:!!!";
-       bot.postMessageToChannel(current_channel, comment, emoji.emojis('smiliey'));
+    else if(message.includes(' --help')){
+       runHelp(current_channel);
     }
     else if(message.includes(' what jokes')){
         jokeTypes = ["general", 'programming', 'knock-knock','reddit','funny story'];
@@ -126,14 +125,7 @@ function handleMessage(message, current_channel){
          bot.postMessageToChannel(current_channel, comment, emoji.emojis('flushed'));    
     }*/
 }
-function MakeJoke(message){
-    fs.writeFile('../joke_data//jokes.json',message,function(err){
-        if(err) {
-            console.log('Error' + err);
-        }
-        console.log('완료');
-    })
-}
+
 //Gets a random integer
 function getRandomInt(max_num) {
     min = Math.ceil(1);
@@ -351,10 +343,10 @@ knockknockJoke= (user_channel)=>{
     }
 
 //Function for giving out information to user to control the bot
-runHelp = () =>{
+runHelp = (user_channel) =>{
     
-    comment = "Thanks for using Joker bot!:ghost::ghost:laugh:\nBot info: type '@joker --help'\nBot functions: @joker tell me [something] "
-    bot.postMessageToChannel('everyone', "Type @joker and write a joke that you would like\n ex- @joker random",emoji.emojis('question'));
-    
+    comment = "Thanks for using Joker bot!:ghost::ghost:laugh:\nBot info: type '@joker --help' for infos\nBot functions: '@joker tell me [something] joke' will send related jokes, if I don't have what you mentioned, I will tell you I don't have that joke:smile:\n"
+    current_jokes = "Joke types I have: general , knock-knock , programming , reddit, funny story"
+    bot.postMessageToChannel(user_channel, comment + current_jokes ,emoji.emojis('question'));
     }
 }
