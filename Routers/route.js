@@ -7,7 +7,7 @@ const url = 'mongodb://localhost:27017/';
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "xoxb-651692943605-645515979745-sfNJBLVbIIb86Bz1gfFc7oT2",
+        token : "",
         name : "joker"
     });
     
