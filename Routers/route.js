@@ -2,15 +2,16 @@ const MongoClient = require('mongodb').MongoClient;
 const SlackBot = require('slackbots'); //link : https://github.com/mishk0/slack-bot-api
 const dbname =  'jokeapi';
 const emoji = require('../slack_emoji');
-const url = 'mongodb://localhost:27017/';
+const url = 'mongodb://13.124.65.242:27017/';
+const url2 = 'mongodb://13.124.65.242:27017/userdb';
 const fs=require('fs');
 message_recieved = 0;
 
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "xoxb-651692943605-645515979745-sqycGNiTIOZNxnly4k1BV1HO",
-        name : "jokebot"
+        token : "",
+        name : "joker"
     });
     
     // Start the slackbot
@@ -141,7 +142,7 @@ function MakeJoke(message,user_channel){
     var user=temp[0].substring(2,temp[0].length-1);
     console.log('유저 => '+user);
     
-    var path='./joke_data/'+user+'.json';
+    var path='./joke_data/user.json';
     console.log(path);
     fs.exists(path,function(exists){
         if(exists){
@@ -153,7 +154,18 @@ function MakeJoke(message,user_channel){
                 else{
                     obj=JSON.parse(data);
                     var length=obj.table.length;
-                    obj.table.push({id : length+1, type : 'userjoke', setup : msg[0], punchline : msg[1]});
+                    obj.table.push({id : length+1, type : user, setup : msg[0], punchline : msg[1]});
+                    var myobj = {id : length+1, type : user, setup : msg[0], punchline : msg[1]};
+                    MongoClient.connect(url,function(err,db){
+                        if(err) throw err;
+                        var dbo = db.db("userdb");
+                        dbo.collection("user").insertOne(myobj, function(err,res){
+                            if(err) throw err;
+                            console.log("1 insert!!");
+                            db.close;
+                        }) 
+                    })
+                    
                     var json=JSON.stringify(obj);
                     fs.writeFile(path,json,'utf8',function(err){
                         if(err){
@@ -168,7 +180,18 @@ function MakeJoke(message,user_channel){
         }
         else{
             console.log("file not exists");
-            obj.table.push({id : 1, type : 'userjoke', setup : msg[0], punchline : msg[1]});
+            obj.table.push({id : 1, type : user, setup : msg[0], punchline : msg[1]});
+            var myobj = {id : 1, type : user, setup : msg[0], punchline : msg[1]};
+                   
+            MongoClient.connect(url,{ useNewUrlParser: true },function(err,db){
+                    if(err) throw err;
+                    var dbo = db.db("userdb");
+                    dbo.collection("user").insertOne(myobj, function(err,res){
+                        if(err) throw err;
+                        console.log("1 insert!!");
+                        db.close;
+                    }) 
+            });
             var json=JSON.stringify(obj);
             fs.writeFile(path,json,'utf8',function(err){
                 if(err){
@@ -194,7 +217,7 @@ function getRandomInt(start,end) {
 //Function for giving out random joke
 randomJoke= (user_channel)=>{
     //Connect to mongodb client
-    MongoClient.connect('mongodb://localhost:27017', function (err, client){
+    MongoClient.connect('mongodb://13.124.65.242:27017/', function (err, client){
     if (err) throw err; 
     //go into database name jokeapi
     var db = client.db('jokeapi');
@@ -231,27 +254,42 @@ UserMakeJoke= (message,user_channel)=>{
     var temp=message.split(' ');
     var user=temp[0].substring(2,temp[0].length-1);
     console.log('유저 => '+user);
+
+    MongoClient.connect('mongodb://13.124.65.242:27017', function (err, client){
+    if (err) throw err; 
+    //go into database name jokeapi
+    var db = client.db('userdb');
+
+    result = db.collection('user').findOne({type: user});
+    console.log(result);
+
+    user = result;
+    //After finding one joke, use promise to run codes synchronously
+    user.then(function(total){
+        question = total.setup;
+        bot.postMessageToChannel(user_channel, question, emoji.emojis('laughing'));
+        console.log("질문 불려짐");
+        return total;
+    })
+    .then((all)=>{
+        joke=all.punchline;
+         //Use setTimeout function to delay the code execution, making sure the user reads the question first and then see the final funny joke
+         setTimeout(function secondFunction(){
+            bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
+            console.log("허무개그 전송~~~~~~!");
+        },3000);
+    })
+    //close mongodb
+    client.close();
+    })
+
     
     var path='./joke_data/'+user+'.json';
 
     var data=fs.readFileSync(path);
     var jsondata=JSON.parse(data);
-    random=getRandomInt(1,jsondata.table.length+1);
 
-    console.log(random);
-    for(var i=0;i<jsondata.table.length;i++){
-        if(jsondata.table[i].id==random){
-            user=jsondata.table[i];
-            question=user.setup;
-            bot.postMessageToChannel(user_channel,question, emoji.emojis('laughing'));
-            joke=user.punchline;
-            setTimeout(function secondfunction(){
-                bot.postMessageToChannel(user_channel,joke, emoji.emojis('laughing'));
-            },3000);
-            console.log("User joke~~~");
-            break;
-        }
-    }
+    
 }
 
 //Function for giving out random joke after filtering only general type jokes
@@ -325,7 +363,7 @@ Funnystory= (user_channel)=>{
             cate = total.category;
             story = total.body;
             category_story=cate+'\n'+story+':stuck_out_tongue_winking_eye::laughing:';
-            bot.postMessageToChannel(user_channel, category_story, emoji.emojis('smiliey'));
+            bot.postMessageToChannel(user_channel, category_story, emoji.emojis('smiley'));
             console.log("Funny story~~~");
         })
         client.close();
