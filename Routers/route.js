@@ -10,7 +10,7 @@ message_recieved = 0;
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "",
+        token : "Your token",
         name : "joker"
     });
     
@@ -107,7 +107,7 @@ function handleMessage(message, current_channel){
         else if(message.includes(' funny story')){
             Funnystory(current_channel);
         }
-        else if(message.includes(' userjoke')){
+        else if(message.includes(' my joke') || message.includes(' myjoke')){
             UserMakeJoke(message,current_channel);
         }  
         else if(message.includes(' me')){
@@ -175,7 +175,7 @@ function MakeJoke(message,user_channel){
                     });
                 }
             });
-            comment="Sucess making joke!!:+1::thumbsup:\nWhen you want to show your joke, please enter @jokebot tell-me-userjoke";
+            comment="Sucess making joke!!:+1::thumbsup:\nWhen you want to show your joke, please enter @joker tell-me-my-joke";
             bot.postMessageToChannel(user_channel,`${comment}:kissing_heart:`,emoji.emojis('nerd_face'));
         }
         else{
@@ -199,7 +199,7 @@ function MakeJoke(message,user_channel){
                 }
                 console.log('완료');
             });
-            comment="Sucess making joke!!:+1::thumbsup:\nWhen you want to show your joke, please enter @jokebot tell-me-userjoke";
+            comment="Sucess making joke!!:+1::thumbsup:\nWhen you want to show your joke, please enter @joker tell-me-userjoke";
             bot.postMessageToChannel(user_channel,`${comment}:kissing_heart:`,emoji.emojis('nerd_face'));
         }
     })
@@ -427,8 +427,9 @@ knockknockJoke= (user_channel)=>{
 //Function for giving out information to user to control the bot
 runHelp = (user_channel) =>{
     
-    comment = "Thanks for using Joker bot!:ghost::ghost:laugh:\nBot info: type '@joker help' for infos\nBot functions: '@joker tell-me [something] joke' will send related jokes, if I don't have what you mentioned, I will tell you I don't have that joke:smile:\n"
-    current_jokes = "Joke types I have: 1)general , 2)knock-knock , 3)programming , 4)reddit, 5)funny story, 6)make joke 7)userjoke"
-    bot.postMessageToChannel(user_channel, comment + current_jokes ,emoji.emojis('question'));
+    comment = "Thanks for using joker bot!:ghost::ghost:laugh:\nBot info: type '@joker help' for infos\nBot functions: '@joker tell-me [something] joke' will send related jokes, if I don't have what you mentioned, I will tell you I don't have that joke:smile:\n"
+    current_jokes = "Joke types I have: 1)general , 2)knock-knock , 3)programming , 4)reddit, 5)funny story:laughing:\n";
+    ownJoke = "Wanna add your own joke? Just type '@joker [make joke : (question), (your joke)]' ! Want to check what jokes you added? Just simply type '@joker tell me my joke:smiley:'";
+    bot.postMessageToChannel(user_channel, comment + current_jokes + ownJoke ,emoji.emojis('question'));
     }
 }
