@@ -6,11 +6,12 @@ const url = 'mongodb://13.124.65.242:27017/';
 const url2 = 'mongodb://13.124.65.242:27017/userdb';
 const fs=require('fs');
 message_recieved = 0;
+ary_size=0;
 
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "Your token",
+        token : "Token",
         name : "joker"
     });
     
@@ -22,7 +23,7 @@ exports.startbot = ()=>{
         channel_length = data.channels.length; 
         for(i=0; i< channel_length; ++i){
             //postMessageToChannel(name, message [, params, callback]) (return: promise) - posts a message to channel by name.
-            bot.postMessageToChannel(data.channels[i].name, 'Have some fun with @Joker!\nFor commands write @joker --help', 
+            bot.postMessageToChannel(data.channels[i].name, 'Have some fun with @Joker!\nFor commands write @jokebot --help', 
             emoji.emojis('bowtie'));
         }
         return data;
@@ -111,7 +112,7 @@ function handleMessage(message, current_channel){
             UserMakeJoke(message,current_channel);
         }  
         else if(message.includes(' me')){
-            comment = "Please use @joker --help to know what I can do!:smile::smile::smile:\n You can write type of joke[knock-knock, general, programming, funny story, reddit]";
+            comment = "Please use @jokebot --help to know what I can do!:smile::smile::smile:\n You can write type of joke[knock-knock, general, programming, funny story, reddit]";
             bot.postMessageToChannel(current_channel, "Tell you what??? :no_mouth:", emoji.emojis('no_mouth'));
             bot.postMessageToChannel(current_channel, comment, emoji.emojis('flushed'));
         }
@@ -141,9 +142,8 @@ function MakeJoke(message,user_channel){
     var temp=message.split(' ');
     var user=temp[0].substring(2,temp[0].length-1);
     console.log('유저 => '+user);
-    
+
     var path='./joke_data/user.json';
-    console.log(path);
     fs.exists(path,function(exists){
         if(exists){
             console.log("yes file exists");
@@ -155,17 +155,26 @@ function MakeJoke(message,user_channel){
                     obj=JSON.parse(data);
                     var length=obj.table.length;
                     obj.table.push({id : length+1, type : user, setup : msg[0], punchline : msg[1]});
-                    var myobj = {id : length+1, type : user, setup : msg[0], punchline : msg[1]};
+                    //var myobj = {id : length+1, type : user, setup : msg[0], punchline : msg[1]};
                     MongoClient.connect(url,function(err,db){
                         if(err) throw err;
                         var dbo = db.db("userdb");
-                        dbo.collection("user").insertOne(myobj, function(err,res){
-                            if(err) throw err;
-                            console.log("1 insert!!");
-                            db.close;
-                        }) 
-                    })
+                        var array = dbo.collection('user').find({type : user}).toArray(function(err,docs){
+                            if(err){
+                                callback(err,null);
+                                return ;
+                            }
+                            
+                            console.log(docs.length);
+                            var myobj = {id : docs.length+1, type : user, setup : msg[0], punchline : msg[1]};
+                            dbo.collection("user").insertOne(myobj, function(err,res){
+                                if(err) throw err;
+                                console.log("1 insert!!");
+                                db.close();
+                            }) 
+                        });
                     
+                    })
                     var json=JSON.stringify(obj);
                     fs.writeFile(path,json,'utf8',function(err){
                         if(err){
@@ -175,7 +184,7 @@ function MakeJoke(message,user_channel){
                     });
                 }
             });
-            comment="Sucess making joke!!:+1::thumbsup:\nWhen you want to show your joke, please enter @joker tell-me-my-joke";
+            comment="Sucess making joke!!:+1::thumbsup:\nWhen you want to show your joke, please enter @jokebot tell-me-my-joke";
             bot.postMessageToChannel(user_channel,`${comment}:kissing_heart:`,emoji.emojis('nerd_face'));
         }
         else{
@@ -189,7 +198,7 @@ function MakeJoke(message,user_channel){
                     dbo.collection("user").insertOne(myobj, function(err,res){
                         if(err) throw err;
                         console.log("1 insert!!");
-                        db.close;
+                        db.close();
                     }) 
             });
             var json=JSON.stringify(obj);
@@ -199,7 +208,7 @@ function MakeJoke(message,user_channel){
                 }
                 console.log('완료');
             });
-            comment="Sucess making joke!!:+1::thumbsup:\nWhen you want to show your joke, please enter @joker tell-me-userjoke";
+            comment="Sucess making joke!!:+1::thumbsup:\nWhen you want to show your joke, please enter @jokebot tell-me-userjoke";
             bot.postMessageToChannel(user_channel,`${comment}:kissing_heart:`,emoji.emojis('nerd_face'));
         }
     })
@@ -259,35 +268,66 @@ UserMakeJoke= (message,user_channel)=>{
     if (err) throw err; 
     //go into database name jokeapi
     var db = client.db('userdb');
+    var array = db.collection('user').find({type: user}).toArray(function(err,docs){
+        if(err){
+            callback(err,null);
+            return;
+        }
+        ary_size=docs.length;
+        console.log(docs.length);
+        var random=getRandomInt(1,ary_size+1);
+        console.log(random);
+        var result=docs[random-1];
+        user = result;
+        console.log(user);
 
-    result = db.collection('user').findOne({type: user});
-    console.log(result);
-
-    user = result;
-    //After finding one joke, use promise to run codes synchronously
-    user.then(function(total){
-        question = total.setup;
+        question = user.setup;
+        joke=user.punchline;
         bot.postMessageToChannel(user_channel, question, emoji.emojis('laughing'));
         console.log("질문 불려짐");
-        return total;
-    })
-    .then((all)=>{
-        joke=all.punchline;
-         //Use setTimeout function to delay the code execution, making sure the user reads the question first and then see the final funny joke
-         setTimeout(function secondFunction(){
+        setTimeout(function secondFunction(){
             bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
             console.log("허무개그 전송~~~~~~!");
         },3000);
-    })
+        // //After finding one joke, use promise to run codes synchronously
+        // user.then(function(total){
+        //     question = total.setup;
+        //     bot.postMessageToChannel(user_channel, question, emoji.emojis('laughing'));
+        //     console.log("질문 불려짐");
+        //     return total;
+        // })
+        // .then((all)=>{
+        //     joke=all.punchline;
+        //     //Use setTimeout function to delay the code execution, making sure the user reads the question first and then see the final funny joke
+        //     setTimeout(function secondFunction(){
+        //         bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
+        //         console.log("허무개그 전송~~~~~~!");
+        //     },3000);
+        // })    
+    });
+
+    //var random=getRandomInt(1,ary_size+1);
+   // console.log(ary_size);
+    // var result=db.collection('user').findOne({type : user ,id : random});
+    // user = result;
+    // //After finding one joke, use promise to run codes synchronously
+    // user.then(function(total){
+    //     question = total.setup;
+    //     bot.postMessageToChannel(user_channel, question, emoji.emojis('laughing'));
+    //     console.log("질문 불려짐");
+    //     return total;
+    // })
+    // .then((all)=>{
+    //     joke=all.punchline;
+    //      //Use setTimeout function to delay the code execution, making sure the user reads the question first and then see the final funny joke
+    //      setTimeout(function secondFunction(){
+    //         bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
+    //         console.log("허무개그 전송~~~~~~!");
+    //     },3000);
+    // })
     //close mongodb
     client.close();
     })
-
-    
-    var path='./joke_data/'+user+'.json';
-
-    var data=fs.readFileSync(path);
-    var jsondata=JSON.parse(data);
 
     
 }
@@ -427,9 +467,9 @@ knockknockJoke= (user_channel)=>{
 //Function for giving out information to user to control the bot
 runHelp = (user_channel) =>{
     
-    comment = "Thanks for using joker bot!:ghost::ghost:laugh:\nBot info: type '@joker help' for infos\nBot functions: '@joker tell-me [something] joke' will send related jokes, if I don't have what you mentioned, I will tell you I don't have that joke:smile:\n"
+    comment = "Thanks for using jokebot bot!:ghost::ghost:laugh:\nBot info: type '@jokebot help' for infos\nBot functions: '@jokebot tell-me [something] joke' will send related jokes, if I don't have what you mentioned, I will tell you I don't have that joke:smile:\n"
     current_jokes = "Joke types I have: 1)general , 2)knock-knock , 3)programming , 4)reddit, 5)funny story:laughing:\n";
-    ownJoke = "Wanna add your own joke? Just type '@joker [make joke : (question), (your joke)]' ! Want to check what jokes you added? Just simply type '@joker tell me my joke:smiley:'";
+    ownJoke = "Wanna add your own joke? Just type '@jokebot [make joke : (question), (your joke)]' ! Want to check what jokes you added? Just simply type '@jokebot tell me my joke:smiley:'";
     bot.postMessageToChannel(user_channel, comment + current_jokes + ownJoke ,emoji.emojis('question'));
     }
 }
