@@ -289,42 +289,9 @@ UserMakeJoke= (message,user_channel)=>{
             bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
             console.log("허무개그 전송~~~~~~!");
         },3000);
-        // //After finding one joke, use promise to run codes synchronously
-        // user.then(function(total){
-        //     question = total.setup;
-        //     bot.postMessageToChannel(user_channel, question, emoji.emojis('laughing'));
-        //     console.log("질문 불려짐");
-        //     return total;
-        // })
-        // .then((all)=>{
-        //     joke=all.punchline;
-        //     //Use setTimeout function to delay the code execution, making sure the user reads the question first and then see the final funny joke
-        //     setTimeout(function secondFunction(){
-        //         bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
-        //         console.log("허무개그 전송~~~~~~!");
-        //     },3000);
-        // })    
+        
     });
 
-    //var random=getRandomInt(1,ary_size+1);
-   // console.log(ary_size);
-    // var result=db.collection('user').findOne({type : user ,id : random});
-    // user = result;
-    // //After finding one joke, use promise to run codes synchronously
-    // user.then(function(total){
-    //     question = total.setup;
-    //     bot.postMessageToChannel(user_channel, question, emoji.emojis('laughing'));
-    //     console.log("질문 불려짐");
-    //     return total;
-    // })
-    // .then((all)=>{
-    //     joke=all.punchline;
-    //      //Use setTimeout function to delay the code execution, making sure the user reads the question first and then see the final funny joke
-    //      setTimeout(function secondFunction(){
-    //         bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
-    //         console.log("허무개그 전송~~~~~~!");
-    //     },3000);
-    // })
     //close mongodb
     client.close();
     })
