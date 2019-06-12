@@ -5,6 +5,8 @@ const emoji = require('../slack_emoji');
 const url = 'mongodb://13.124.65.242:27017/';
 const url2 = 'mongodb://13.124.65.242:27017/userdb';
 const fs=require('fs');
+
+//Initialize message recieved time and array size for static use
 message_recieved = 0;
 ary_size=0;
 
