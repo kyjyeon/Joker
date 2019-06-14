@@ -182,7 +182,7 @@ function MakeJoke(message,user_channel){
                         if(err){
                             console.log(err);
                         }
-                        console.log('완료');
+                        console.log('complete');
                     });
                 }
             });
@@ -208,7 +208,7 @@ function MakeJoke(message,user_channel){
                 if(err){
                     console.log(err);
                 }
-                console.log('완료');
+                console.log('complete');
             });
             comment="Sucess making joke!!:+1::thumbsup:\nWhen you want to show your joke, please enter @jokebot tell-me-userjoke";
             bot.postMessageToChannel(user_channel,`${comment}:kissing_heart:`,emoji.emojis('nerd_face'));
@@ -243,7 +243,7 @@ randomJoke= (user_channel)=>{
     user.then(function(total){
         question = total.setup;
         bot.postMessageToChannel(user_channel, question, emoji.emojis('laughing'));
-        console.log("질문 불려짐");
+        console.log("random Question called");
         return total;
     })
     .then((all)=>{
@@ -251,7 +251,7 @@ randomJoke= (user_channel)=>{
          //Use setTimeout function to delay the code execution, making sure the user reads the question first and then see the final funny joke
          setTimeout(function secondFunction(){
             bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
-            console.log("허무개그 전송~~~~~~!");
+            console.log("random Punchline goes~~~~~~!");
         },3000);
     })
     //close mongodb
@@ -286,10 +286,10 @@ UserMakeJoke= (message,user_channel)=>{
         question = user.setup;
         joke=user.punchline;
         bot.postMessageToChannel(user_channel, question, emoji.emojis('laughing'));
-        console.log("질문 불려짐");
+        console.log("User's joke question called");
         setTimeout(function secondFunction(){
             bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
-            console.log("허무개그 전송~~~~~~!");
+            console.log("User's joke sent~~~~~~!");
         },3000);
         
     });
@@ -314,7 +314,7 @@ generalJoke= (user_channel)=>{
         user.then(function(total){
             question = total.setup;
             bot.postMessageToChannel(user_channel,question,emoji.emojis('laughing'));
-            console.log('질문 불려짐');
+            console.log('General question called');
             return total;
         })
         .then((all)=>{
@@ -322,7 +322,7 @@ generalJoke= (user_channel)=>{
             //Use setTimeout function to delay the code execution, making sure the user reads the question first and then see the final funny joke
             setTimeout(function secondFunction(){
                 bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
-                console.log("허무개그 전송~~~~~~!");
+                console.log("General punchline~~~~~~!");
             },3000);
         })
         client.close();
@@ -341,7 +341,7 @@ programmingJoke= (user_channel)=>{
         user.then(function(total){
             question = total.setup;
             bot.postMessageToChannel(user_channel,question,emoji.emojis('laughing'));
-            console.log("질문 불려짐");
+            console.log("Programming question called");
             return total;
         })
         .then((all)=>{
@@ -349,7 +349,7 @@ programmingJoke= (user_channel)=>{
             //Use setTimeout function to delay the code execution, making sure the user reads the question first and then see the final funny joke
             setTimeout(function secondFunction(){
                 bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
-                console.log("허무개그 전송~~~~~~!");
+                console.log("Programming joke called~~~~~!");
             },3000);
         })
         client.close();
@@ -393,7 +393,7 @@ redditJoke= (user_channel)=>{
         user.then(function(total){
              title = total.title;
              bot.postMessageToChannel(user_channel, title, emoji.emojis('smiliey'));
-             console.log("질문 불려짐");
+             console.log("reddit joke question");
              return total;
         })
         .then((all)=>{
@@ -401,7 +401,7 @@ redditJoke= (user_channel)=>{
             //Use setTimeout function to delay the code execution, making sure the user reads the question first and then see the final funny joke
             setTimeout(function secondFunction(){
                 bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
-                console.log("허무개그 전송~~~~~~!");
+                console.log("reddit punchline!");
             },3000);
         })
         client.close();
@@ -419,14 +419,14 @@ knockknockJoke= (user_channel)=>{
         user.then(function(total){
             question = total.setup;
             bot.postMessageToChannel(user_channel, question, emoji.emojis('laughing'));
-            console.log("질문 불려짐");
+            console.log("knock-knock called");
             return total;
         })
         .then((all)=>{
             joke=all.punchline;
             setTimeout(function secondFunction(){
                 bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
-                console.log("허무개그 전송~~~~~~!");
+                console.log("knockknock answer~~~~~~!");
             },3000);
         })
         client.close();
