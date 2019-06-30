@@ -143,7 +143,7 @@ function MakeJoke(message,user_channel){
     var msg=input[1].split(',');
     var temp=message.split(' ');
     var user=temp[0].substring(2,temp[0].length-1);
-    console.log('유저 => '+user);
+    console.log(' => '+user);
 
     var path='./joke_data/user.json';
     fs.exists(path,function(exists){
@@ -171,7 +171,7 @@ function MakeJoke(message,user_channel){
                             var myobj = {id : docs.length+1, type : user, setup : msg[0], punchline : msg[1]};
                             dbo.collection("user").insertOne(myobj, function(err,res){
                                 if(err) throw err;
-                                console.log("1 insert!!");
+                                console.log("1 inserted!!");
                                 db.close();
                             }) 
                         });
@@ -264,7 +264,7 @@ UserMakeJoke= (message,user_channel)=>{
 
     var temp=message.split(' ');
     var user=temp[0].substring(2,temp[0].length-1);
-    console.log('유저 => '+user);
+    console.log('=> '+user);
 
     MongoClient.connect('mongodb://13.124.65.242:27017', function (err, client){
     if (err) throw err; 
