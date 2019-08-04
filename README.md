@@ -4,7 +4,7 @@
 <b>Collected Jokes api link: https://github.com/15Dkatz/official_joke_api<br>
 Opensource for slackbot module link : https://github.com/mishk0/slack-bot-api<br>
 Base opensource for jokebot idea: https://github.com/bradtraversy/slack_jokebot<br><br> 
-Used Database: Mongodb</b><br>
+Database: Mongodb</b><br>
 Server : AWS EC2<br><br><br>
 
 
