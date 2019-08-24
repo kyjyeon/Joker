@@ -85,7 +85,6 @@ exports.startbot = ()=>{
     //handleMessage(data.text);
 });
 
-
 // Responding to Data
 function handleMessage(message, current_channel){
     console.log(message);
@@ -134,7 +133,6 @@ function handleMessage(message, current_channel){
         MakeJoke(message,current_channel);
     }
 }
-
 
 function MakeJoke(message,user_channel){
     var obj={
