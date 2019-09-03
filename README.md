@@ -1,5 +1,5 @@
 <h1>Joker</h1><br>
-<h2>A slack joke bot that reacts to user's chat </h2><br>
+<h2>A slack joke bot that reacting to user's chat </h2><br>
 
 <b>Collected Jokes api link: https://github.com/15Dkatz/official_joke_api<br>
 Opensource for slackbot module link : https://github.com/mishk0/slack-bot-api<br>
