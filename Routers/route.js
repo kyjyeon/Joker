@@ -1,6 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
-const SlackBot = require('slackbots'); //link : https://github.com/mishk0/slack-bot-api
-const dbname =  'jokeapi';
+const SlackBot = require('slackbots'); 
 const emoji = require('../slack_emoji');
 const url = 'mongodb://13.124.65.242:27017/';
 const url2 = 'mongodb://13.124.65.242:27017/userdb';
