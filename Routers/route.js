@@ -31,7 +31,8 @@ exports.startbot = ()=>{
         return data;
     })
     .then((data)=>{
-        console.log('Sucessfully started app to all channels');
+        //print the words when bot.on worked successfully
+        console.log('Successfully started app to all channels');
     })  
     });
     // Error Handler
