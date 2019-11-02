@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "mongodb": "^3.2.6",
-    "mongoose": "^5.5.11",
+    "mongoose": "^5.7.5",
     "slackbots": "^1.2.0"
   }
 }
